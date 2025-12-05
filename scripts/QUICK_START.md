@@ -26,10 +26,12 @@ chmod +x scripts/deploy.sh  # First time only
 
 ### Step 3: Follow the Prompts
 
-1. **Repository URL**: `https://github.com/sherwinr7/falling-block-game.git`
-2. **Token**: Paste your GitHub token
-3. **Save config**: Press `Y` to save for future use
-4. **Commit message**: Enter message or press Enter for default
+1. **Git Username**: `sherwinr7`
+2. **Git Email**: `your-email@example.com`
+3. **Repository URL**: `https://github.com/sherwinr7/falling-block-game.git`
+4. **Token**: Paste your GitHub token
+5. **Save config**: Press `Y` to save for future use
+6. **Commit message**: Enter message or press Enter for default
 
 Done! Your code is now on GitHub! 🎉
 

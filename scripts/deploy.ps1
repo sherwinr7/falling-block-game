@@ -20,10 +20,12 @@ function Get-GitConfig {
 }
 
 function Save-GitConfig {
-    param($repoUrl, $token)
+    param($repoUrl, $token, $userName, $userEmail)
     $config = @{
         repoUrl = $repoUrl
         token = $token
+        userName = $userName
+        userEmail = $userEmail
         lastUpdated = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
     }
     $config | ConvertTo-Json | Set-Content $CONFIG_FILE
@@ -46,16 +48,45 @@ if (-not (Test-Path ".git")) {
 $config = Get-GitConfig
 $repoUrl = ""
 $token = ""
+$userName = ""
+$userEmail = ""
 
 if ($config) {
     Write-Info "Found existing configuration:"
     Write-Host "  Repository: $($config.repoUrl)" -ForegroundColor Yellow
+    Write-Host "  User: $($config.userName) <$($config.userEmail)>" -ForegroundColor Yellow
     Write-Host "  Last Updated: $($config.lastUpdated)" -ForegroundColor Yellow
     
     $useExisting = Read-Host "`nUse existing configuration? (Y/n)"
     if ($useExisting -eq "" -or $useExisting -eq "Y" -or $useExisting -eq "y") {
         $repoUrl = $config.repoUrl
         $token = $config.token
+        $userName = $config.userName
+        $userEmail = $config.userEmail
+    }
+}
+
+# Get Git user name if not set
+if ($userName -eq "") {
+    Write-Info "`nEnter your Git username:"
+    Write-Host "  Example: sherwinr7" -ForegroundColor Gray
+    $userName = Read-Host "Username"
+    
+    if ($userName -eq "") {
+        Write-Error "✗ Git username is required!"
+        exit 1
+    }
+}
+
+# Get Git user email if not set
+if ($userEmail -eq "") {
+    Write-Info "`nEnter your Git email:"
+    Write-Host "  Example: your-email@example.com" -ForegroundColor Gray
+    $userEmail = Read-Host "Email"
+    
+    if ($userEmail -eq "") {
+        Write-Error "✗ Git email is required!"
+        exit 1
     }
 }
 
@@ -87,10 +118,16 @@ if ($token -eq "") {
     }
 }
 
+# Configure Git user
+Write-Info "`n⚙️ Configuring Git user..."
+git config user.name "$userName"
+git config user.email "$userEmail"
+Write-Success "✓ Git user configured: $userName <$userEmail>"
+
 # Save configuration
 $saveConfig = Read-Host "`nSave this configuration for future use? (Y/n)"
 if ($saveConfig -eq "" -or $saveConfig -eq "Y" -or $saveConfig -eq "y") {
-    Save-GitConfig -repoUrl $repoUrl -token $token
+    Save-GitConfig -repoUrl $repoUrl -token $token -userName $userName -userEmail $userEmail
 }
 
 # Extract username and repo from URL

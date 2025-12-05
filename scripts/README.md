@@ -47,6 +47,8 @@ chmod +x scripts/deploy.sh
 ### First Time Setup
 
 1. **Run the script** - It will prompt you for:
+   - Git username (e.g., `sherwinr7`)
+   - Git email (e.g., `your-email@example.com`)
    - GitHub repository URL (e.g., `https://github.com/sherwinr7/falling-block-game.git`)
    - GitHub Personal Access Token
 
@@ -72,6 +74,8 @@ The script creates `.git-config.json` in your project root:
 {
   "repoUrl": "https://github.com/username/repo.git",
   "token": "your_github_token",
+  "userName": "sherwinr7",
+  "userEmail": "your-email@example.com",
   "lastUpdated": "2024-12-04 10:30:00"
 }
 ```

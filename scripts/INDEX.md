@@ -20,6 +20,7 @@ Welcome to the Falling Block Game deployment and debugging tools!
 | `QUICK_START.md` | Fast deployment guide | First-time users |
 | `DEBUG_TOOLS.md` | Debugging & troubleshooting | Developers |
 | `PROJECT_INFO.md` | Project overview & structure | Everyone |
+| `GIT_USER_SETUP.md` | Git user configuration guide | Everyone |
 | `INDEX.md` | This file - navigation guide | Everyone |
 
 ## 🎯 Quick Links

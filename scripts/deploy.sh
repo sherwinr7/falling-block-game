@@ -23,6 +23,8 @@ load_config() {
     if [ -f "$CONFIG_FILE" ]; then
         REPO_URL=$(jq -r '.repoUrl' "$CONFIG_FILE")
         TOKEN=$(jq -r '.token' "$CONFIG_FILE")
+        USER_NAME=$(jq -r '.userName' "$CONFIG_FILE")
+        USER_EMAIL=$(jq -r '.userEmail' "$CONFIG_FILE")
         LAST_UPDATED=$(jq -r '.lastUpdated' "$CONFIG_FILE")
         return 0
     fi
@@ -35,6 +37,8 @@ save_config() {
 {
   "repoUrl": "$1",
   "token": "$2",
+  "userName": "$3",
+  "userEmail": "$4",
   "lastUpdated": "$(date '+%Y-%m-%d %H:%M:%S')"
 }
 EOF
@@ -58,9 +62,12 @@ fi
 # Load existing config
 REPO_URL=""
 TOKEN=""
+USER_NAME=""
+USER_EMAIL=""
 if load_config; then
     info "Found existing configuration:"
     warning "  Repository: $REPO_URL"
+    warning "  User: $USER_NAME <$USER_EMAIL>"
     warning "  Last Updated: $LAST_UPDATED"
     
     read -p $'\n'"Use existing configuration? (Y/n): " use_existing
@@ -69,6 +76,32 @@ if load_config; then
     else
         REPO_URL=""
         TOKEN=""
+        USER_NAME=""
+        USER_EMAIL=""
+    fi
+fi
+
+# Get Git username if not set
+if [ "$USER_NAME" = "" ]; then
+    info "\nEnter your Git username:"
+    echo -e "${GRAY}  Example: sherwinr7${NC}"
+    read -p "Username: " USER_NAME
+    
+    if [ "$USER_NAME" = "" ]; then
+        error "✗ Git username is required!"
+        exit 1
+    fi
+fi
+
+# Get Git email if not set
+if [ "$USER_EMAIL" = "" ]; then
+    info "\nEnter your Git email:"
+    echo -e "${GRAY}  Example: your-email@example.com${NC}"
+    read -p "Email: " USER_EMAIL
+    
+    if [ "$USER_EMAIL" = "" ]; then
+        error "✗ Git email is required!"
+        exit 1
     fi
 fi
 
@@ -98,10 +131,16 @@ if [ "$TOKEN" = "" ]; then
     fi
 fi
 
+# Configure Git user
+info "\n⚙️ Configuring Git user..."
+git config user.name "$USER_NAME"
+git config user.email "$USER_EMAIL"
+success "✓ Git user configured: $USER_NAME <$USER_EMAIL>"
+
 # Save configuration
 read -p $'\n'"Save this configuration for future use? (Y/n): " save_config_choice
 if [ "$save_config_choice" = "" ] || [ "$save_config_choice" = "Y" ] || [ "$save_config_choice" = "y" ]; then
-    save_config "$REPO_URL" "$TOKEN"
+    save_config "$REPO_URL" "$TOKEN" "$USER_NAME" "$USER_EMAIL"
 fi
 
 # Extract username and repo from URL
